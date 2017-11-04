@@ -188,7 +188,7 @@ namespace Skinner
             // Render to vertex attribute buffers at once with using MRT. Note
             // that we can't use MRT when VR is enabled (due to issue #942235).
             // In that case, we use separate shaders to workaround the issue.
-            if (!UnityEngine.VR.VRSettings.enabled)
+            if (!UnityEngine.XR.XRSettings.enabled)
             {
                 if (_swapFlag)
                     _camera.SetTargetBuffers(_mrt1, _positionBuffer1.depthBuffer);
