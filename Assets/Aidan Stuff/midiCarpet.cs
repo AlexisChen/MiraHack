@@ -19,8 +19,6 @@ public class midiCarpet : MonoBehaviour {
 	
 
 	void Update () {
-		
-	
 
 			if (currentTime <= timeToMove)
 			{
@@ -29,10 +27,7 @@ public class midiCarpet : MonoBehaviour {
 
 
 			}
-
-
-
-
+			
 //			GetComponent<particleGrid> ().peakHeight = Mathf.SmoothDamp (maximum, minimum, ref velocity, timeToMove);
 
 

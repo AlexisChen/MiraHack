@@ -33,7 +33,7 @@ public class CarpetManager : MonoBehaviour {
 		m_spheres = new Transform[_size,_size];
 		_width =  ((float)_size) * _spacing;
 
-		Instantiate (transformTrigger,transform);
+		//Instantiate (transformTrigger,transform);
 
 		for (int x = 0; x < _size; x++)
 		{
@@ -66,9 +66,10 @@ public class CarpetManager : MonoBehaviour {
 		}
 	}
 
-	void HandleEvent(float frequency, float amplitude)
+	public void HandleEvent(float frequency, float amplitude)
 	{
 		int x = Mathf.RoundToInt(_width/2.0f), z = Mathf.RoundToInt(_width/2.0f);
+
 		Transform sphere = Instantiate (transformTrigger, GridToWorld (x, z), Quaternion.identity);
 		//generate the relevant information that the sphere needs
 		//figure out where we want the center to be
