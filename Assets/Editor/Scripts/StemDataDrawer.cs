@@ -19,9 +19,7 @@ sealed class StemDataDrawer : PropertyDrawer {
             return;
         }
 
-        if (Event.current.type == EventType.Repaint) {
-            BuildOptionsList();
-        }
+        BuildOptionsList();
 
         int index = _stemDataIndexes.IndexOf(property.objectReferenceValue as StemData);
         bool wasUnknown = index < 0;

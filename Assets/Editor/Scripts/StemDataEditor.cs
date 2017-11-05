@@ -2,6 +2,7 @@
 using UnityEngine;
 
 [CustomEditor(typeof(StemData))]
+[CanEditMultipleObjects]
 sealed class StemDataEditor : Editor {
     private enum MetadataType {
         RMS
@@ -12,10 +13,16 @@ sealed class StemDataEditor : Editor {
     public override void OnInspectorGUI() {
         DrawDefaultInspector();
 
-        var stemData = (StemData) target;
-
         EditorGUILayout.Space();
         GUILayout.Label("Audio Data", EditorStyles.boldLabel);
+
+        if (serializedObject.isEditingMultipleObjects) {
+            GUILayout.Label("Editing multiple objects");
+            return;
+        }
+
+        var stemData = (StemData) target;
+
         EditorGUILayout.BeginHorizontal();
         {
             _typeInput = (MetadataType) EditorGUILayout.EnumPopup(_typeInput);

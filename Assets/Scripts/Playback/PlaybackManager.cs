@@ -40,8 +40,31 @@ public sealed class PlaybackManager : MonoBehaviourSingleton<PlaybackManager> {
         _playhead.Play();
 
         for (int i = 0; i < _audioSources.Length; ++i) {
-            if (_audioSources[i]) _audioSources[i].Play();
+            if (!_audioSources[i]) continue;
+
+            _audioSources[i].Play();
+
+            _audioSources[i].volume = (i == 0 && _song.MainStem && _song.MainStem.Autoplay) ||
+                                      (i - 1 < _song.Stems.Length && _song.Stems[i - 1] && _song.Stems[i - 1].Autoplay)
+                ? 1
+                : 0;
         }
+    }
+
+    /// <summary>
+    /// Get the AudioSource which is playing a certain stem.
+    /// </summary>
+    public AudioSource GetAudioSourceForStem(StemData stem) {
+        int index;
+        if (stem == _song.MainStem) {
+            index = 0;
+        } else {
+            index = System.Array.IndexOf(_song.Stems, stem);
+            if (index < 0) return null;
+            ++index;
+        }
+
+        return index >= _audioSources.Length ? null : _audioSources[index];
     }
 
     protected override void Awake() {
