@@ -30,13 +30,12 @@ public class CarpetSphere : MonoBehaviour {
 	private float TWOPI = 2 * Mathf.PI;
 	private float freq = 1;
 
-	private float colorB = 0.5f;
 	private Color baseColor;
 
 	// Use this for initialization
 	void Start () {
 		behaviorRunning = false;
-		baseColor = Color.white * (1 - colorB);
+		baseColor = Color.white;
 
 		this.GetComponent<Renderer>().material.SetColor("_Color", baseColor);
 	}
@@ -64,20 +63,20 @@ public class CarpetSphere : MonoBehaviour {
 		transform.position = pos;
 
 		// Change color
-		Color finalColor = baseColor;
+		Color notFinalColor = Color.black;
 		foreach(Color c in cSin.Keys.ToList()) {
-			float s = Mathf.Sin (TWOPI * cFreq[c] * Time.fixedTime).Map(-1, 1, 0, colorB);
-			finalColor += cSin[c] * s * c;
+			float s = Mathf.Sin (TWOPI * cFreq[c] * Time.fixedTime).Map(-1, 1, 0, 1);
+			notFinalColor += cSin[c] * s * c;
 			cSin[c] *= colorDecay;
 		}
 		foreach(Color c in cCos.Keys.ToList()) {
-			float s = Mathf.Cos (TWOPI * cFreq[c] * Time.fixedTime).Map(-1, 1, 0, colorB);
-			finalColor += cCos[c] * s * c;
+			float s = Mathf.Cos (TWOPI * cFreq[c] * Time.fixedTime).Map(-1, 1, 0, 1);
+			notFinalColor += cCos[c] * s * c;
 			cCos[c] *= colorDecay;
 		}
-		//if (finalColor != baseColor)
-			//Debug.Log(finalColor);
-		finalColor.a = 1.0f;
+		notFinalColor.a = 1.0f;
+		float weight = Mathf.Max(notFinalColor.r, Mathf.Max(notFinalColor.g, notFinalColor.b));
+		Color finalColor = Color.Lerp(notFinalColor, baseColor, weight);
 		this.GetComponent<Renderer>().material.SetColor("_Color", finalColor);
 	}
 
