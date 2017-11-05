@@ -86,21 +86,19 @@ public class triggerClips : Photon.PunBehaviour {
 		float frequency  = 0.25f + index* (4-0.25f)/16;
 		Color color = Color.white;
 		switch(group) {
-		case 0:
-			color = Color.Lerp( Color.red, Color.yellow ,  clipIndex/4.0f);
-			break;
 		case 1:
-			color = Color.Lerp( Color.yellow, Color.green ,  clipIndex/4.0f);
+			color = Color.Lerp( Color.red, Color.yellow ,  (clipIndex-1)/4.0f);
 			break;
 		case 2:
-			color = Color.Lerp( Color.green, Color.blue ,  clipIndex/4.0f);
+			color = Color.Lerp( Color.yellow, Color.green ,  (clipIndex-1)/4.0f);
 			break;
 		case 3:
-			color = Color.Lerp( Color.blue, Color.red ,  clipIndex/4.0f);
+			color = Color.Lerp( Color.green, Color.blue ,  (clipIndex-1)/4.0f);
 			break;
 		case 4:
-			color = Color.Lerp( Color.blue, Color.red ,  clipIndex/4.0f);
+			color = Color.Lerp( Color.blue, Color.red ,  (clipIndex-1)/4.0f);
 			break;
+		
 		default:
 			color = Color.white;
 			break;
