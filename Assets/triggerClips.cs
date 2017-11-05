@@ -87,7 +87,7 @@ public class triggerClips : Photon.PunBehaviour {
         CarpetManager other = (CarpetManager) carp.GetComponent(typeof(CarpetManager));
         other.HandleEvent(10 * group - 5, 10 * clipIndex + 5, 1, frequency, color);
 
-        StemGroupManager.Instance.SetGroupClip(group, clipIndex);
+        StemGroupManager.Instance.SetGroupClip(group - 1, clipIndex);
 
 
         Debug.Log("Clip " + clipIndex + " in Group " + group + " has been triggered");
