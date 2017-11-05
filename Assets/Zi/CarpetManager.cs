@@ -10,8 +10,8 @@ public class CarpetManager : MonoBehaviour {
 	public Transform transformTrigger;
 
 	[Header("Initializing")]
-	public int _initialSize;
-	public float _initialParticleScale;
+	private float _initialSize;
+	private float _initialParticleScale;
 
 	[Header("Testing")]
 	public float peakHeight;
@@ -21,8 +21,8 @@ public class CarpetManager : MonoBehaviour {
 	public float phase = 1.0f;
 
 	private Transform [,] m_spheres;
-	private int _size;
-	private static float _width;
+	private int _size = 40;
+	private const float _width = 10f;
 
 	private int step = 0;
 
@@ -30,27 +30,32 @@ public class CarpetManager : MonoBehaviour {
 	void Start () {
 		//prefab = Resources.Load("Resources/BassCarpet/carpetSphere") as Transform;
 		//transformTrigger = Resources.Load("Resources/BassCarpet/transformTrigger") as Transform;
-
+		//This is all in units of milimeters.
+		_initialParticleScale = 2500f;
+		float radius = _initialParticleScale;// diameter = _initialParticleScale * 2;
 		_spacing = 0.25f;
-		_size = _initialSize;
+		//_initialSize = (_width / radius + _spacing) / (_spacing + 2);
+
+		//_size = (int)_initialSize;
 		m_spheres = new Transform[_size,_size];
-		_width =  ((float)_size) * _spacing;
 
-		float x1 = 30;
-		float x2 = 10;
-		float zz = 20;
-
+		//start at r-500 add 5r each time, end at 500-r
+		float xpos = -_width / 2.0f;
+		//float zpos = radius - _width / 2.0f;
 		for (int x = 0; x < _size; x++)
 		{
+			float zpos = -_width / 2.0f;
 			for (int z = 0; z < _size; z++)
 			{
 				m_spheres [x, z] = Instantiate (prefab) as Transform;
 				Transform t = m_spheres [x, z];
 				t.localScale = new Vector3 (1, 1, 1) * _initialParticleScale;
 				t.GetComponent <CarpetSphere>().SetGridLocation(new Vector2Int(x,z));
-				t.localPosition = GridToWorld ((float)x, (float)z);
+				t.localPosition = new Vector3 (xpos, 0 ,zpos);//GridToWorld ((float)x, (float)z);
 				t.SetParent (transform);
+				zpos += _spacing;
 			}
+			xpos += _spacing;
 		}
 	}
 
@@ -58,26 +63,17 @@ public class CarpetManager : MonoBehaviour {
 	void Update () {
 
 		/* TEMPORARY CODE */
-		if (step == 3) {
+		if (step == 100) {
 			HandleEvent(30, 10, 1f, 1f, Color.red);
 			HandleEvent(10, 30, 1f, 4f, Color.green);
 		}
 		step ++;
-
-		float time = Time.fixedTime;
-		for (int x = 0; x < _size; x++)//, xpos = x)
-		{
-			for (int z = 0; z < _size; z++)//, zpos = z)
-			{
-				Transform t = m_spheres [x, z];
-				Vector3 pos = t.position;
-			}
-		}
 	}
 
 	public void HandleEvent(float x, float z, float amp, float freq, Color color)
 	{
-		Transform sphere1 = Instantiate (transformTrigger, GridToWorld (x, z), Quaternion.identity);
+		Transform sphere1 = Instantiate (transformTrigger, transform);
+		sphere1.localPosition = GridToWorld (x, z);
 		sphere1.GetComponent<ExpandingSphere> ().Initialize(amp, freq, color);
 	}
 

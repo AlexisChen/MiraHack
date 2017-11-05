@@ -30,14 +30,15 @@ public class CarpetSphere : MonoBehaviour {
 	private float TWOPI = 2 * Mathf.PI;
 	private float freq = 1;
 
-	private float colorB = 0.75f;
+	private float colorB = 0.5f;
 	private Color baseColor;
 
 	// Use this for initialization
 	void Start () {
 		behaviorRunning = false;
 		baseColor = Color.white * (1 - colorB);
-		this.GetComponent<Renderer>().material.color = baseColor;
+
+		this.GetComponent<Renderer>().material.SetColor("_Color", baseColor);
 	}
 
 	public void SetGridLocation(Vector2Int x)
@@ -77,7 +78,7 @@ public class CarpetSphere : MonoBehaviour {
 		//if (finalColor != baseColor)
 			//Debug.Log(finalColor);
 		finalColor.a = 1.0f;
-		this.GetComponent<Renderer>().material.color = finalColor;
+		this.GetComponent<Renderer>().material.SetColor("_Color", finalColor);
 	}
 
 	public void StartBehavior(ExpandingSphere sphere, float amp, float freq, Color c)
