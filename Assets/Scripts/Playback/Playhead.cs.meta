@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Alexis fx/Skinner/Editor/SkinnerGlitchEditor.cs.meta
+guid: c181f13eef8ec40978c1c4250c6250de
+timeCreated: 1482590297
+licenseType: Pro
+=======
+guid: b7478db622071409285843464bb57a28
+timeCreated: 1508618669
+licenseType: Free
+>>>>>>> 2b7b31cdfee92f5284675f2a5d5a4992b62d470c:Assets/Scripts/Playback/Playhead.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
