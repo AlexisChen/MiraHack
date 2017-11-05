@@ -84,7 +84,27 @@ public class triggerClips : Photon.PunBehaviour {
 
 		//
 		float frequency  = 0.25f + index* (4-0.25f)/16;
-		Color color = Color.Lerp( Color.white, Color.blue ,  0.1f+index*0.9f/16);
+		Color color = Color.white;
+		switch(group) {
+		case 0:
+			color = Color.Lerp( Color.red, Color.yellow ,  clipIndex/4.0f);
+			break;
+		case 1:
+			color = Color.Lerp( Color.yellow, Color.green ,  clipIndex/4.0f);
+			break;
+		case 2:
+			color = Color.Lerp( Color.green, Color.blue ,  clipIndex/4.0f);
+			break;
+		case 3:
+			color = Color.Lerp( Color.blue, Color.red ,  clipIndex/4.0f);
+			break;
+		case 4:
+			color = Color.Lerp( Color.blue, Color.red ,  clipIndex/4.0f);
+			break;
+		default:
+			color = Color.white;
+			break;
+		}
 //		Vector3 coord =  Vector3 (, 0, height * clipIndex);
 
 		CarpetManager other = (CarpetManager) carp.GetComponent(typeof(CarpetManager));
