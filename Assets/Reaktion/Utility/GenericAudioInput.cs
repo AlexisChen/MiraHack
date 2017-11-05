@@ -29,7 +29,6 @@ namespace Reaktion {
 public class GenericAudioInput : MonoBehaviour
 {
     AudioSource audioSource;
-
     public float estimatedLatency { get; protected set; }
 
     void Awake()
@@ -59,7 +58,7 @@ public class GenericAudioInput : MonoBehaviour
         var sampleRate = AudioSettings.outputSampleRate;
 
         // Create a clip which is assigned to the default microphone.
-        audioSource.clip = Microphone.Start(null, true, 1, sampleRate);
+			audioSource.clip = Microphone.Start(null, true, 1, sampleRate);
 
         if (audioSource.clip != null)
         {
