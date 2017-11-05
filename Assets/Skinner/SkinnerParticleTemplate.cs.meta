@@ -1,8 +1,9 @@
 fileFormatVersion: 2
-guid: 1b39674139d8cf8449b76905376dad58
+guid: 3e68455e26fa446e89fb8554ef4367d5
 timeCreated: 1480252691
 licenseType: Pro
 MonoImporter:
+  externalObjects: {}
   serializedVersion: 2
   defaultReferences:
   - _mesh: {instanceID: 0}
