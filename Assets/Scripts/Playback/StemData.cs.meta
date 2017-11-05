@@ -1,19 +1,13 @@
 fileFormatVersion: 2
-<<<<<<< HEAD:Assets/Alexis fx/Skinner/Editor/SkinnerModelEditor.cs.meta
-guid: 8a03e8bb0734245f1adbf9dc3dbaf71a
-timeCreated: 1479539575
-licenseType: Pro
-=======
 guid: 1a713b3b499b26e4fbcdfca899446530
 timeCreated: 1508974245
 licenseType: Free
->>>>>>> 2b7b31cdfee92f5284675f2a5d5a4992b62d470c:Assets/Scripts/Playback/StemData.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  userData:
+  assetBundleName:
+  assetBundleVariant:
