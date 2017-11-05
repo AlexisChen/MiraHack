@@ -21,6 +21,9 @@ public sealed class PlaybackManager : MonoBehaviourSingleton<PlaybackManager> {
     [SerializeField]
     private bool _createAudioSources;
 
+    [SerializeField]
+    private bool _autoplay;
+
     private Playhead _playhead;
 
     public SongData Song {
@@ -56,6 +59,10 @@ public sealed class PlaybackManager : MonoBehaviourSingleton<PlaybackManager> {
         }
 
         SetupSong();
+
+        if (_autoplay) {
+            Play();
+        }
     }
 
     private void Update() {
