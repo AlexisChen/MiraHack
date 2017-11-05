@@ -7,9 +7,8 @@ using MidiJack;
 
 public class triggerClips : Photon.PunBehaviour {
 
-	Vector3 leftTop; 
-	float width; 
-	float height;
+	float width = 40; 
+	float height= 40;
 	public GameObject carp;
 
 
@@ -84,10 +83,12 @@ public class triggerClips : Photon.PunBehaviour {
 		int index = 4 * group + clipIndex;
 
 		//
-			float frequency  = 0.25f + index* (4-0.25f)/16;
+		float frequency  = 0.25f + index* (4-0.25f)/16;
 		Color color = Color.Lerp( Color.white, Color.blue ,  0.1f+index*0.9f/16);
-//		Vector3 coord =  Vector3 (width * group, 0, height * clipIndex);
+//		Vector3 coord =  Vector3 (, 0, height * clipIndex);
 
+		CarpetManager other = (CarpetManager) carp.GetComponent(typeof(CarpetManager));
+		other.HandleEvent (10 * group - 5, 10*clipIndex + 5, 1, frequency, color);
 
 
 
