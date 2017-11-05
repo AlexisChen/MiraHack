@@ -1,24 +1,43 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+
+public static class ExtensionMethods {
+	public static float Map (this float value, float a1, float b1, float a2, float b2) {
+	    return (value - a1) / (b1 - a1) * (b2 - a2) + a2;
+	}
+}
 
 public class CarpetSphere : MonoBehaviour {
 	private bool behaviorRunning;
 	private Vector2Int _gridLocation;
 	private float timeStart;
-	private float aSin;
-	private float aCos;
-	private float startAmp = 10.0f;
-	private float timeDecay = 0.98f;
-	private float spaceDecay = 0.98f;
+
+	// Frequency, Amplitude
+	private Dictionary<float, float> fSin = new Dictionary<float, float>();
+	private Dictionary<float, float> fCos = new Dictionary<float, float>();
+
+	// Color, Amplitude
+	private Dictionary<Color, float> cSin = new Dictionary<Color, float>();
+	private Dictionary<Color, float> cCos = new Dictionary<Color, float>();
+	private Dictionary<Color, float> cFreq = new Dictionary<Color, float>();
+
+	private float timeDecay = 0.9f;
+	private float colorDecay = 0.75f;
+	private float spaceDecay = 0.65f;
 
 	private float TWOPI = 2 * Mathf.PI;
 	private float freq = 1;
 
+	private float colorB = 0.75f;
+	private Color baseColor;
+
 	// Use this for initialization
 	void Start () {
 		behaviorRunning = false;
-		//_gridLocation = CarpetManager.WorldToGrid (transform.position);
+		baseColor = Color.white * (1 - colorB);
+		this.GetComponent<Renderer>().material.color = baseColor;
 	}
 
 	public void SetGridLocation(Vector2Int x)
@@ -28,29 +47,81 @@ public class CarpetSphere : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (!behaviorRunning)
-			return;
 		float time = Time.fixedTime - timeStart;
 
 		// Change position
 		Vector3 pos = transform.position;
 		pos.y = 0.0f;
-		pos.y += aSin * Mathf.Sin (TWOPI * freq * Time.fixedTime);
-		pos.y	+= aCos * Mathf.Cos (TWOPI * freq * Time.fixedTime);
+		foreach(float freq in fSin.Keys.ToList()) {
+			pos.y += fSin[freq] * Mathf.Sin (TWOPI * freq * Time.fixedTime);
+			fSin[freq] *= timeDecay;
+		}
+		foreach(float freq in fCos.Keys.ToList()) {
+			pos.y	+= fCos[freq] * Mathf.Cos (TWOPI * freq * Time.fixedTime);
+			fCos[freq] *= timeDecay;
+		}
 		transform.position = pos;
 
-		// Do time decay
-		aSin *= timeDecay;
-		aCos *= timeDecay;
+		// Change color
+		Color finalColor = baseColor;
+		foreach(Color c in cSin.Keys.ToList()) {
+			float s = Mathf.Sin (TWOPI * cFreq[c] * Time.fixedTime).Map(-1, 1, 0, colorB);
+			finalColor += cSin[c] * s * c;
+			cSin[c] *= colorDecay;
+		}
+		foreach(Color c in cCos.Keys.ToList()) {
+			float s = Mathf.Cos (TWOPI * cFreq[c] * Time.fixedTime).Map(-1, 1, 0, colorB);
+			finalColor += cCos[c] * s * c;
+			cCos[c] *= colorDecay;
+		}
+		//if (finalColor != baseColor)
+			//Debug.Log(finalColor);
+		finalColor.a = 1.0f;
+		this.GetComponent<Renderer>().material.color = finalColor;
 	}
 
-	public void StartBehavior(float c)
+	public void StartBehavior(ExpandingSphere sphere, float amp, float freq, Color c)
 	{
 		behaviorRunning = true;
-		timeStart = Time.fixedTime;
 
-		float cTemp = startAmp * Mathf.Pow (spaceDecay, c);
-		aSin += startAmp * Mathf.Cos (- TWOPI * freq * timeStart);
-		aCos += startAmp * Mathf.Sin (- TWOPI * freq * timeStart);
+		float time = Time.fixedTime;
+
+		int ampFreq;
+		float scaledAmp = amp * Mathf.Pow (spaceDecay, sphere.transform.localScale.x);
+
+		float fSinDelta = scaledAmp * Mathf.Cos (- TWOPI * freq * time);
+		float fCosDelta = scaledAmp * Mathf.Sin (- TWOPI * freq * time);
+		float cSinDelta = scaledAmp * Mathf.Cos (- TWOPI * freq * time);
+		float cCosDelta = scaledAmp * Mathf.Sin (- TWOPI * freq * time);
+
+		float fSinVal;
+		if (fSin.TryGetValue(freq, out fSinVal)) {
+			fSin[freq] = fSinVal + fSinDelta;
+		} else {
+			fSin.Add(freq, fSinDelta);
+		}
+
+		float fCosVal;
+		if (fCos.TryGetValue(freq, out fCosVal)) {
+			fCos[freq] = fCosVal + fCosDelta;
+		} else {
+			fCos.Add(freq, fCosDelta);
+		}
+
+		float cSinVal;
+		if (cSin.TryGetValue(c, out cSinVal)) {
+			cSin[c] = cSinVal + cSinDelta;
+		} else {
+			cSin.Add(c, cSinDelta);
+		}
+
+		float cCosVal;
+		if (cCos.TryGetValue(c, out cCosVal)) {
+			cCos[c] = cCosVal + cCosDelta;
+		} else {
+			cCos.Add(c, cCosDelta);
+		}
+
+		cFreq[c] = freq;
 	}
 }

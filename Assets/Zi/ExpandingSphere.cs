@@ -7,34 +7,39 @@ using UnityEngine;
 public class ExpandingSphere : MonoBehaviour {
 	public float maxRadius;
 	public int areaOfAffect;
-	public float _expandSpeed;
+	public float expandSpeed;
 
 	[Header("Testing")]
 	public bool run;
 
-	//private int _carpetSize;
-	private float _currentDistance;
-	private Vector2 _gridLocation;
+	private float amplitude;
+	private float frequency;
+	private Color color;
+	public float startTime;
 
-	public void Initialize(int carpetSize, Vector2 gridLocation)
+	public void Initialize(float _amplitude, float _frequency, Color _color)
 	{
-		//initialize position, functionality of the sphere, etc.
-		//_carpetSize = carpetSize;
-		_gridLocation = gridLocation;
+		amplitude = _amplitude;
+		frequency = _frequency;
+		color = _color;
 	}
 
 	// Use this for initialization
 	void Start () {
-
+		startTime = Time.fixedTime;
+		//transform.localScale = Vector3.zero;
+		Vector3 pos = transform.position;
+		pos.y = 0.25f;
+		transform.position = pos;
 	}
 
 	// Update is called once per frame
 	void Update () {
-		float expand = _expandSpeed * Time.deltaTime;
+		float expand = expandSpeed * Time.deltaTime;
 		Vector3 cur = transform.localScale;
 		Vector3 scale = new Vector3(cur.x + expand, cur.y + expand, cur.z + expand);
-		//if (scale.x > maxRadius)
-			//Destroy (gameObject);
+		if (scale.x > maxRadius)
+			Destroy (gameObject);
 		transform.localScale = scale;
 	}
 
@@ -43,16 +48,9 @@ public class ExpandingSphere : MonoBehaviour {
 		// If it isn't a carpet sphere, we don't care about it
 		if(!other.name.Contains ("carpetSphere")) return;
 
-		//perform a transform on to the thing
-		//find the layer that we're on from the center
+		// Make the carpet move
 		GameObject ball = other.gameObject;
-		//Vector3 pos = ball.transform.position;
-		//Vector2Int layer = CarpetManager.WorldToGrid (pos) - _gridLocation;
-		//int layerNum = Mathf.Max (Mathf.Abs (layer.x), Mathf.Abs (layer.y));
-		ball.GetComponent <CarpetSphere> ().StartBehavior (transform.localScale.x);
-		//Calculate the value to pass in
-
-		//Pass in the value to the ball
+		ball.GetComponent <CarpetSphere> ().StartBehavior (this, amplitude, frequency, color);
 
 	}
 

@@ -17,28 +17,28 @@ public class CarpetManager : MonoBehaviour {
 	public float peakHeight;
 	public static float dampening;
 	public float multiplier = 0.01f;
-	public float speed = 10.0f;
+	public float speed;
 	public float phase = 1.0f;
 
 	private Transform [,] m_spheres;
 	private int _size;
 	private static float _width;
 
+	private int step = 0;
+
 	// Use this for initialization
 	void Start () {
 		//prefab = Resources.Load("Resources/BassCarpet/carpetSphere") as Transform;
 		//transformTrigger = Resources.Load("Resources/BassCarpet/transformTrigger") as Transform;
-		_spacing = 5;
+
+		_spacing = 0.25f;
 		_size = _initialSize;
 		m_spheres = new Transform[_size,_size];
 		_width =  ((float)_size) * _spacing;
 
-		float x1 = 20;
+		float x1 = 30;
 		float x2 = 10;
-		float zzz = 15;
-
-		Transform sphere1 = Instantiate (transformTrigger, GridToWorld (x1, zzz), Quaternion.identity);
-		Transform sphere2 = Instantiate (transformTrigger, GridToWorld (x2, zzz), Quaternion.identity);
+		float zz = 20;
 
 		for (int x = 0; x < _size; x++)
 		{
@@ -56,43 +56,38 @@ public class CarpetManager : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+
+		/* TEMPORARY CODE */
+		if (step == 3) {
+			HandleEvent(30, 10, 1f, 1f, Color.red);
+			HandleEvent(10, 30, 1f, 4f, Color.green);
+		}
+		step ++;
+
 		float time = Time.fixedTime;
-		dampening = 1;//(1 - Mathf.Pow (Mathf.Min (time * 0.1f, 1), 2));
-		//float xpos = 0, zpos = 0;
 		for (int x = 0; x < _size; x++)//, xpos = x)
 		{
 			for (int z = 0; z < _size; z++)//, zpos = z)
 			{
 				Transform t = m_spheres [x, z];
 				Vector3 pos = t.position;
-				//t.position = new Vector3(pos.x, pos.y + (1- Mathf.Pow( Mathf.Min(time*0.1f, 1), 2))*Mathf.Cos (time * Mathf.PI * 1.0f)*1.0f, pos.z);
-				//m_spheres [x, z].localPosition = new Vector3 (xpos - _width / 2.0f + xpos * _spacing, 0, zpos - _width / 2.0f + zpos * _spacing);
 			}
 		}
 	}
 
-	void HandleEvent(float frequency, float amplitude)
+	public void HandleEvent(float x, float z, float amp, float freq, Color color)
 	{
-		float x1 = -5;
-		float x2 = 5;
-		float z = 0;
-		//Transform sphere1 = Instantiate (transformTrigger, GridToWorld (x1, z), Quaternion.identity);
-		//Transform sphere2 = Instantiate (transformTrigger, GridToWorld (x2, z), Quaternion.identity);
-		//generate the relevant information that the sphere needs
-		//figure out where we want the center to be
-		//sphere1.GetComponent<ExpandingSphere> ().Initialize(_size, new Vector2 (x1, z));
-		//sphere2.GetComponent<ExpandingSphere> ().Initialize(_size, new Vector2 (x2, z));
+		Transform sphere1 = Instantiate (transformTrigger, GridToWorld (x, z), Quaternion.identity);
+		sphere1.GetComponent<ExpandingSphere> ().Initialize(amp, freq, color);
 	}
 
 	public static Vector3 GridToWorld(float x, float z)
 	{
-		return new Vector3 (x - _width / 2.0f + x * _spacing, 0, z - _width / 2.0f + z * _spacing);
+		return new Vector3 (x * _spacing - _width / 2.0f, 0, z * _spacing - _width / 2.0f);
 	}
 
-	public static Vector2Int WorldToGrid(Vector3 p)
+	public static Vector2 WorldToGrid(float x, float z)
 	{
-		float x = p.x, z = p.z;
-		return new Vector2Int (Mathf.RoundToInt((x + _width / 2.0f) / (1 + _spacing)),
-			Mathf.RoundToInt((z + _width / 2.0f) / (1 + _spacing)));
+		return new Vector2((x + _width / 2.0f) / _spacing, (z + _width / 2.0f) / _spacing);
 	}
 }
