@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public sealed class StemGroupManager : MonoBehaviour {
+public sealed class StemGroupManager : MonoBehaviourSingleton<StemGroupManager> {
     [System.Serializable]
     private struct Group {
         public StemData[] Stems;
@@ -18,6 +18,14 @@ public sealed class StemGroupManager : MonoBehaviour {
     public bool debugApply;
 
     private ClipInfo[][] _liveClipInfo;
+
+    public int GroupCount {
+        get { return _groups.Length; }
+    }
+
+    public int[] ActiveClips {
+        get { return _activeClips; }
+    }
 
     private void Start() {
         _liveClipInfo = new ClipInfo[_groups.Length][];
@@ -64,6 +72,12 @@ public sealed class StemGroupManager : MonoBehaviour {
         if (clip >= 0) {
             SetStemMute(group, clip, false);
         }
+    }
+
+    public StemPlayhead GetGroupPlayhead(int group) {
+        return _activeClips[group] >= 0
+            ? _liveClipInfo[group][_activeClips[group]].Playhead
+            : null;
     }
 
     private void SetStemMute(int group, int clip, bool muted) {

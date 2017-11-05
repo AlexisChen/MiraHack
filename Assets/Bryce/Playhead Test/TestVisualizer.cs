@@ -2,23 +2,16 @@
 
 namespace Bryce {
     public class TestVisualizer : MonoBehaviour {
-        // Add StemData fields to let stems be selected in the inspector
-        [SerializeField] private StemData _stem;
-
         [SerializeField] private Transform _beatTransform;
         [SerializeField] private Transform _noteTransform;
-        [SerializeField] private Transform _volumeTransform;
+        [SerializeField] private Transform[] _groupVolumeTransforms;
         [SerializeField] private TextMesh _stemText;
         [SerializeField] private MeshRenderer[] _subdivisions;
 
-        private StemPlayhead _stemPlayhead;
         private MaterialPropertyBlock _propertyBlock;
-        private float _volumeDamped;
+        private float[] _volumeDamped;
 
         private void Start() {
-            // Get the stem playheads for the stems configured in the inspector
-            _stemPlayhead = PlaybackManager.Instance.Playhead.GetStemPlayhead(_stem);
-
             // Subscribe to beat and note events from the Playhead and stems
             // OnBeat will be called on each song beat
             // OnSubdivision will be called on each beat subdivision
@@ -26,12 +19,13 @@ namespace Bryce {
             PlaybackManager.Instance.Playhead.Beat += OnBeat;
             PlaybackManager.Instance.Playhead.Subdivision += OnSubdivision;
             PlaybackManager.Instance.Playhead.SongEnd += OnSongEnd;
-            _stemPlayhead.Note += OnNote;
 
             // Play shouldn't really be called from a visualizer
             PlaybackManager.Instance.Play();
 
             _propertyBlock = new MaterialPropertyBlock();
+
+            _volumeDamped = new float[StemGroupManager.Instance.GroupCount];
         }
 
         private void OnDestroy() {
@@ -42,7 +36,6 @@ namespace Bryce {
                 PlaybackManager.Instance.Playhead.Subdivision -= OnSubdivision;
                 PlaybackManager.Instance.Playhead.SongEnd -= OnSongEnd;
             }
-            _stemPlayhead.Note -= OnNote;
         }
 
         private void Update() {
@@ -57,18 +50,21 @@ namespace Bryce {
             if (noteScale < 1) noteScale = 1;
             _noteTransform.localScale = new Vector3(noteScale, noteScale, noteScale);
 
-            // Get the volume of stem 2 and let it jump up but damp it going down so it lasts longer
-            var volume = _stemPlayhead.GetVolume();
-            if (volume > _volumeDamped) {
-                _volumeDamped = volume;
-            } else {
-                _volumeDamped = Mathf.Lerp(volume, _volumeDamped, 0.5f);
-            }
+            for (int g = 0; g < StemGroupManager.Instance.GroupCount; ++g) {
+                // Get the volume of the stem and let it jump up but damp it going down so it lasts longer
+                var playhead = StemGroupManager.Instance.GetGroupPlayhead(g);
+                var volume = playhead != null ? playhead.GetVolume() : 0;
+                if (volume > _volumeDamped[g]) {
+                    _volumeDamped[g] = volume;
+                } else {
+                    _volumeDamped[g] = Mathf.Lerp(volume, _volumeDamped[g], 0.5f);
+                }
 
-            // Scale the cube with the volume
-            var volumeScale = _volumeTransform.localScale;
-            volumeScale.y = _volumeDamped * 10;
-            _volumeTransform.localScale = volumeScale;
+                // Scale the cube with the volume
+                var volumeScale = _groupVolumeTransforms[g].localScale;
+                volumeScale.y = _volumeDamped[g] * 10;
+                _groupVolumeTransforms[g].localScale = volumeScale;
+            }
         }
 
         private void OnBeat(int beat) {

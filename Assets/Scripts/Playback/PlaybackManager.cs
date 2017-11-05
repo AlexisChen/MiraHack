@@ -7,14 +7,19 @@ public sealed class PlaybackManager : MonoBehaviourSingleton<PlaybackManager> {
     /// <summary>
     /// The song to be played.
     /// </summary>
-    [SerializeField] private SongData _song;
+    [SerializeField]
+    private SongData _song;
 
     /// <summary>
     /// Add the audio sources in the scene here.
     /// The first audio source will be filled with the song's main stem clip,
     /// and each additional audio source will be filled with a stem in the order that they're on the song.
     /// </summary>
-    [SerializeField] private AudioSource[] _audioSources;
+    [SerializeField]
+    private AudioSource[] _audioSources;
+
+    [SerializeField]
+    private bool _createAudioSources;
 
     private Playhead _playhead;
 
@@ -33,6 +38,30 @@ public sealed class PlaybackManager : MonoBehaviourSingleton<PlaybackManager> {
         get { return _playhead; }
     }
 
+    protected override void Awake() {
+        base.Awake();
+
+        _playhead = new Playhead();
+        _playhead.Skip += OnPlayheadSkip;
+
+        if (_createAudioSources) {
+            _audioSources = new AudioSource[1 + _song.Stems.Length];
+            for (int i = 0; i < _audioSources.Length; ++i) {
+                var playbackObject = new GameObject("Playback Source " + i);
+                playbackObject.transform.parent = transform;
+                var audioSource = playbackObject.AddComponent<AudioSource>();
+                audioSource.playOnAwake = false;
+                _audioSources[i] = audioSource;
+            }
+        }
+
+        SetupSong();
+    }
+
+    private void Update() {
+        _playhead.Update();
+    }
+
     /// <summary>
     /// Start playback.
     /// </summary>
@@ -45,7 +74,7 @@ public sealed class PlaybackManager : MonoBehaviourSingleton<PlaybackManager> {
             _audioSources[i].Play();
 
             _audioSources[i].volume = (i == 0 && _song.MainStem && _song.MainStem.Autoplay) ||
-                                      (i - 1 < _song.Stems.Length && _song.Stems[i - 1] && _song.Stems[i - 1].Autoplay)
+                                      (i > 0 && i - 1 < _song.Stems.Length && _song.Stems[i - 1] && _song.Stems[i - 1].Autoplay)
                 ? 1
                 : 0;
         }
@@ -65,19 +94,6 @@ public sealed class PlaybackManager : MonoBehaviourSingleton<PlaybackManager> {
         }
 
         return index >= _audioSources.Length ? null : _audioSources[index];
-    }
-
-    protected override void Awake() {
-        base.Awake();
-
-        _playhead = new Playhead();
-        _playhead.Skip += OnPlayheadSkip;
-
-        SetupSong();
-    }
-
-    private void Update() {
-        _playhead.Update();
     }
 
     private void OnPlayheadSkip(float timeDelta) {
