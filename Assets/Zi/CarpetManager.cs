@@ -33,7 +33,12 @@ public class CarpetManager : MonoBehaviour {
 		m_spheres = new Transform[_size,_size];
 		_width =  ((float)_size) * _spacing;
 
-		Instantiate (transformTrigger,transform);
+		float x1 = 20;
+		float x2 = 10;
+		float zzz = 15;
+
+		Transform sphere1 = Instantiate (transformTrigger, GridToWorld (x1, zzz), Quaternion.identity);
+		Transform sphere2 = Instantiate (transformTrigger, GridToWorld (x2, zzz), Quaternion.identity);
 
 		for (int x = 0; x < _size; x++)
 		{
@@ -68,11 +73,15 @@ public class CarpetManager : MonoBehaviour {
 
 	void HandleEvent(float frequency, float amplitude)
 	{
-		int x = Mathf.RoundToInt(_width/2.0f), z = Mathf.RoundToInt(_width/2.0f);
-		Transform sphere = Instantiate (transformTrigger, GridToWorld (x, z), Quaternion.identity);
+		float x1 = -5;
+		float x2 = 5;
+		float z = 0;
+		//Transform sphere1 = Instantiate (transformTrigger, GridToWorld (x1, z), Quaternion.identity);
+		//Transform sphere2 = Instantiate (transformTrigger, GridToWorld (x2, z), Quaternion.identity);
 		//generate the relevant information that the sphere needs
 		//figure out where we want the center to be
-		sphere.GetComponent<ExpandingSphere> ().Initialize(_size, new Vector2Int (x, z));
+		//sphere1.GetComponent<ExpandingSphere> ().Initialize(_size, new Vector2 (x1, z));
+		//sphere2.GetComponent<ExpandingSphere> ().Initialize(_size, new Vector2 (x2, z));
 	}
 
 	public static Vector3 GridToWorld(float x, float z)
