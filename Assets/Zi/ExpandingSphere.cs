@@ -14,9 +14,9 @@ public class ExpandingSphere : MonoBehaviour {
 
 	//private int _carpetSize;
 	private float _currentDistance;
-	private Vector2Int _gridLocation;
+	private Vector2 _gridLocation;
 
-	public void Initialize(int carpetSize, Vector2Int gridLocation)
+	public void Initialize(int carpetSize, Vector2 gridLocation)
 	{
 		//initialize position, functionality of the sphere, etc.
 		//_carpetSize = carpetSize;
@@ -30,9 +30,6 @@ public class ExpandingSphere : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		run = Time.fixedTime > 1f;
-		if (!run)
-			return;
 		float expand = _expandSpeed * Time.deltaTime;
 		Vector3 cur = transform.localScale;
 		Vector3 scale = new Vector3(cur.x + expand, cur.y + expand, cur.z + expand);
@@ -52,11 +49,11 @@ public class ExpandingSphere : MonoBehaviour {
 		//Vector3 pos = ball.transform.position;
 		//Vector2Int layer = CarpetManager.WorldToGrid (pos) - _gridLocation;
 		//int layerNum = Mathf.Max (Mathf.Abs (layer.x), Mathf.Abs (layer.y));
-		ball.GetComponent <CarpetSphere> ().StartBehavior (0);
+		ball.GetComponent <CarpetSphere> ().StartBehavior (transform.localScale.x);
 		//Calculate the value to pass in
 
 		//Pass in the value to the ball
 
 	}
-		
+
 }

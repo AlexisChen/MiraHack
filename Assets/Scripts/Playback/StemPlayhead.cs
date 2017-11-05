@@ -59,16 +59,18 @@ public sealed class StemPlayhead : Playable {
 
         // Find the right stem note index
         _stemNoteIndex = 0;
-        var noteTime = _stem.NoteTimes[0];
-        while (noteTime.Beat < newBeat || (noteTime.Beat == newBeat && noteTime.Subdivision <= newSubdivision)) {
-            if (Note != null) Note(this, newBeat, newSubdivision);
+        if (_stem.NoteTimes.Length > 0) {
+            var noteTime = _stem.NoteTimes[0];
+            while (noteTime.Beat < newBeat || (noteTime.Beat == newBeat && noteTime.Subdivision <= newSubdivision)) {
+                if (Note != null) Note(this, newBeat, newSubdivision);
 
-            // Move to next
-            ++_stemNoteIndex;
-            if (_stemNoteIndex < _stem.NoteTimes.Length) {
-                noteTime = _stem.NoteTimes[_stemNoteIndex];
-            } else {
-                break;
+                // Move to next
+                ++_stemNoteIndex;
+                if (_stemNoteIndex < _stem.NoteTimes.Length) {
+                    noteTime = _stem.NoteTimes[_stemNoteIndex];
+                } else {
+                    break;
+                }
             }
         }
     }

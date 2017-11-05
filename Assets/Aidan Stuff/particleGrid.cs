@@ -4,7 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(ParticleSystem))]
 public class particleGrid : MonoBehaviour {
-	
+
 	public int SizeX;
 	public int SizeY;
 	public float Spacing;
@@ -36,7 +36,7 @@ public class particleGrid : MonoBehaviour {
 
 
 	}
-		
+
 	void Update () {
 
 		int numParticlesAlive = m_System.GetParticles(m_Particles);
@@ -54,13 +54,13 @@ public class particleGrid : MonoBehaviour {
 				m_System.SetParticles(m_Particles, numParticlesAlive);
 
 				counting++;
-			
+
 			}
 		}
 
 
 		if (testRadius == true) {
-			
+
 			for (float i = 0.0f; i < maxRadius; i++) {
 
 				for (float a = 0.0f; a < (Mathf.PI * 2); a += 0.1f) {

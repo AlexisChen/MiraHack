@@ -52,7 +52,7 @@ public sealed class StemData : ScriptableObject {
             return;
         }
 
-        float[] samples = new float[_clip.samples * _clip.channels];
+        float[] samples = new float[_clip.samples];
         _clip.GetData(samples, 0);
 
         int offset = 0;
