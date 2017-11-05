@@ -26,8 +26,14 @@ public class CarpetManager : MonoBehaviour {
 
 	private int step = 0;
 
-	// Use this for initialization
-	void Start () {
+    private float[] _volumeCache;
+    private int _lastVolumeCacheFrame = -1;
+
+    public float Width {
+        get { return _width; }
+    }
+
+    void Start() {
 		//prefab = Resources.Load("Resources/BassCarpet/carpetSphere") as Transform;
 		//transformTrigger = Resources.Load("Resources/BassCarpet/transformTrigger") as Transform;
 		//This is all in units of milimeters.
@@ -50,7 +56,11 @@ public class CarpetManager : MonoBehaviour {
 				m_spheres [x, z] = Instantiate (prefab) as Transform;
 				Transform t = m_spheres [x, z];
 				t.localScale = new Vector3 (1, 1, 1) * _initialParticleScale;
-				t.GetComponent <CarpetSphere>().SetGridLocation(new Vector2Int(x,z));
+
+                var carpetSphere = t.GetComponent<CarpetSphere>();
+			    carpetSphere.Manager = this;
+                carpetSphere.SetGridLocation(new Vector2Int(x,z));
+
 				t.localPosition = new Vector3 (xpos, 0 ,zpos);//GridToWorld ((float)x, (float)z);
 				t.SetParent (transform);
 				zpos += _spacing;
@@ -59,8 +69,7 @@ public class CarpetManager : MonoBehaviour {
 		}
 	}
 
-	// Update is called once per frame
-	void Update () {
+	void Update() {
 
 		/* TEMPORARY CODE */
 		if (step == 100) {
@@ -77,12 +86,46 @@ public class CarpetManager : MonoBehaviour {
 		sphere1.GetComponent<ExpandingSphere> ().Initialize(amp, freq, color);
 	}
 
-	public static Vector3 GridToWorld(float x, float z)
+    public float GetSphereOffset(float[] stemWeights) {
+        float offset = 0;
+        offset += stemWeights[0] * GetGroupVolume(0) * 5;
+        offset += stemWeights[1] * GetGroupVolume(1) * 5;
+        offset += stemWeights[2] * GetGroupVolume(2) * 5;
+        offset += stemWeights[3] * GetGroupVolume(3) * 5;
+        return offset;
+    }
+
+    public float GetGroupVolume(int group) {
+        // Cache the volume for each group this frame
+        if (_lastVolumeCacheFrame != Time.frameCount) {
+            if (_volumeCache == null) {
+                _volumeCache = new float[StemGroupManager.Instance.GroupCount];
+            }
+
+            for (int i = 0; i < StemGroupManager.Instance.GroupCount; ++i) {
+                var playhead = StemGroupManager.Instance.GetGroupPlayhead(i);
+
+                // Get the volume and let it jump up but damp it going down so it lasts longer
+                var volume = playhead != null ? playhead.GetVolume() : 0;
+                float damping;
+                damping = volume > _volumeCache[i]
+                    ? 0.1f // going up
+                    : 0.5f;
+                _volumeCache[i] = Mathf.Lerp(volume, _volumeCache[i], damping);
+            }
+
+            _lastVolumeCacheFrame = Time.frameCount;
+        }
+
+        return _volumeCache[group];
+    }
+
+	public Vector3 GridToWorld(float x, float z)
 	{
 		return new Vector3 (x * _spacing - _width / 2.0f, 0, z * _spacing - _width / 2.0f);
 	}
 
-	public static Vector2 WorldToGrid(float x, float z)
+	public Vector2 WorldToGrid(float x, float z)
 	{
 		return new Vector2((x + _width / 2.0f) / _spacing, (z + _width / 2.0f) / _spacing);
 	}

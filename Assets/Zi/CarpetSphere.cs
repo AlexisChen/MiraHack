@@ -23,6 +23,8 @@ public class CarpetSphere : MonoBehaviour {
 	private Dictionary<Color, float> cCos = new Dictionary<Color, float>();
 	private Dictionary<Color, float> cFreq = new Dictionary<Color, float>();
 
+    private float[] _groupWeights;
+
 	private float timeDecay = 0.9f;
 	private float colorDecay = 0.75f;
 	private float spaceDecay = 0.65f;
@@ -32,12 +34,17 @@ public class CarpetSphere : MonoBehaviour {
 
 	private Color baseColor;
 
-	// Use this for initialization
+    public CarpetManager Manager { get; set; }
+
+    // Use this for initialization
 	void Start () {
 		behaviorRunning = false;
 		baseColor = Color.white;
 
 		this.GetComponent<Renderer>().material.SetColor("_Color", baseColor);
+
+        _groupWeights = new float[StemGroupManager.Instance.GroupCount];
+	    CalculateGroupWeights();
 	}
 
 	public void SetGridLocation(Vector2Int x)
@@ -60,6 +67,9 @@ public class CarpetSphere : MonoBehaviour {
 			pos.y	+= fCos[freq] * Mathf.Cos (TWOPI * freq * Time.fixedTime);
 			fCos[freq] *= timeDecay;
 		}
+
+	    pos.y += Manager.GetSphereOffset(_groupWeights);
+
 		transform.position = pos;
 
 		// Change color
@@ -124,4 +134,20 @@ public class CarpetSphere : MonoBehaviour {
 
 		cFreq[c] = freq;
 	}
+
+    private void CalculateGroupWeights() {
+        // Drums: radial out from center
+        var distFromCenter = Mathf.Clamp01(transform.localPosition.magnitude / Manager.Width * 1.5f);
+        distFromCenter *= distFromCenter;
+        _groupWeights[0] = 1 - distFromCenter;
+
+        // Percussion
+        _groupWeights[1] = 0;
+
+        // Chords
+        _groupWeights[2] = 1;//Mathf.Clamp01((transform.localPosition.x - 5) / 10);
+
+        // Bass
+        _groupWeights[3] = 0;
+    }
 }
