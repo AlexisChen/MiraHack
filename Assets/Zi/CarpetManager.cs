@@ -89,9 +89,9 @@ public class CarpetManager : MonoBehaviour {
     public float GetSphereOffset(float[] stemWeights) {
         float offset = 0;
         offset += stemWeights[0] * GetGroupVolume(0) * 5;
-        offset += stemWeights[1] * GetGroupVolume(1) * 2;
-        offset += stemWeights[2] * GetGroupVolume(2) * 2;
-        offset += stemWeights[3] * GetGroupVolume(3) * 2;
+        offset += stemWeights[1] * GetGroupVolume(1) * 5;
+        offset += stemWeights[2] * GetGroupVolume(2) * 5;
+        offset += stemWeights[3] * GetGroupVolume(3) * 5;
         return offset;
     }
 
